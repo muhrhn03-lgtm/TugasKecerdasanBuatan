@@ -74,12 +74,17 @@
       font-size: 0.95rem; padding: 0; transition: color 0.2s;
     }
     .pw-toggle:hover { color: var(--primary); }
+    .brand-field { display: none; }
+    .brand-field.show { display: block; }
+    .brand-field input { border-color: #f0a500 !important; background: #fffbf0 !important; }
+    .brand-field input:focus { border-color: #e65100 !important; background: white !important; }
+    .brand-hint { font-size: 0.75rem; color: #e65100; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
   </style>
 </head>
 <body>
   <div class="auth-box">
     <div class="auth-logo">
-      <img src="assets/img/Logo.png" alt="Logo">
+      <img src="assets/img/Logo2.png" alt="Logo">
       <h2>Warung Ne'Cil</h2>
     </div>
 
@@ -113,6 +118,14 @@
           <button type="button" class="pw-toggle" onclick="togglePw('loginPassword', this)"><i class="fas fa-eye"></i></button>
         </div>
       </div>
+      <div class="field brand-field" id="loginBrandField">
+        <label><i class="fas fa-shield-alt" style="color:#e65100"></i> Kode Brand Admin</label>
+        <div class="field-pw">
+          <input type="password" id="loginBrand" placeholder="Masukkan kode brand" />
+          <button type="button" class="pw-toggle" onclick="togglePw('loginBrand', this)"><i class="fas fa-eye"></i></button>
+        </div>
+        <div class="brand-hint"><i class="fas fa-info-circle"></i> Kode khusus yang diberikan oleh pemilik</div>
+      </div>
       <button class="auth-btn" onclick="doLogin()">Masuk <i class="fas fa-arrow-right"></i></button>
     </div>
 
@@ -145,6 +158,14 @@
           <button type="button" class="pw-toggle" onclick="togglePw('regPassword', this)"><i class="fas fa-eye"></i></button>
         </div>
       </div>
+      <div class="field brand-field" id="regBrandField">
+        <label><i class="fas fa-shield-alt" style="color:#e65100"></i> Kode Brand Admin</label>
+        <div class="field-pw">
+          <input type="password" id="regBrand" placeholder="Masukkan kode brand" />
+          <button type="button" class="pw-toggle" onclick="togglePw('regBrand', this)"><i class="fas fa-eye"></i></button>
+        </div>
+        <div class="brand-hint"><i class="fas fa-info-circle"></i> Kode khusus yang diberikan oleh pemilik</div>
+      </div>
       <button class="auth-btn" onclick="doRegister()">Daftar Sekarang <i class="fas fa-user-plus"></i></button>
     </div>
   </div>
@@ -157,11 +178,27 @@
       btn.querySelector('i').className = isHidden ? 'fas fa-eye-slash' : 'fas fa-eye';
     }
 
+    const BRAND_CODE = '75123';
+
     function switchTab(tab) {
       document.querySelectorAll('.auth-tab').forEach((t, i) => t.classList.toggle('active', (i === 0) === (tab === 'login')));
       document.getElementById('loginForm').classList.toggle('active', tab === 'login');
       document.getElementById('registerForm').classList.toggle('active', tab === 'register');
     }
+
+    // Tampilkan/sembunyikan field kode brand saat role berubah
+    document.querySelectorAll('input[name="loginRole"]').forEach(r => {
+      r.addEventListener('change', () => {
+        document.getElementById('loginBrandField').classList.toggle('show', r.value === 'admin' && r.checked);
+        document.getElementById('loginBrand').value = '';
+      });
+    });
+    document.querySelectorAll('input[name="registerRole"]').forEach(r => {
+      r.addEventListener('change', () => {
+        document.getElementById('regBrandField').classList.toggle('show', r.value === 'admin' && r.checked);
+        document.getElementById('regBrand').value = '';
+      });
+    });
 
     function getUsers() {
       return JSON.parse(localStorage.getItem('wn_users') || '[]');
@@ -170,13 +207,20 @@
       localStorage.setItem('wn_users', JSON.stringify(users));
     }
 
-    // Seed admin default jika belum ada
+    // Seed admin default + bersihkan duplikat
     (function seedAdmin() {
-      const users = getUsers();
+      let users = JSON.parse(localStorage.getItem('wn_users') || '[]');
+      const seen = new Set();
+      users = users.filter(u => {
+        if (seen.has(u.username)) return false;
+        seen.add(u.username);
+        return true;
+      });
       if (!users.find(u => u.username === 'admin')) {
         users.push({ name: 'Admin', username: 'admin', password: 'admin123', role: 'admin' });
-        saveUsers(users);
       }
+      // Selalu simpan hasil bersih ke localStorage
+      localStorage.setItem('wn_users', JSON.stringify(users));
     })();
 
     function showError(id, msg) {
@@ -195,12 +239,19 @@
       const role = document.querySelector('input[name="loginRole"]:checked').value;
 
       if (!username || !password) return showError('loginError', 'Username dan password wajib diisi!');
+      if (role === 'admin') {
+        const brand = document.getElementById('loginBrand').value;
+        if (!brand) return showError('loginError', 'Kode brand wajib diisi untuk login sebagai Admin!');
+        if (brand !== BRAND_CODE) return showError('loginError', 'Kode brand tidak valid!');
+      }
 
       const users = getUsers();
       const user = users.find(u => u.username === username && u.password === password && u.role === role);
       if (!user) return showError('loginError', 'Username, password, atau role tidak sesuai!');
+      if (user.blocked) return showError('loginError', 'Akun Anda Telah Diblokir Oleh Admin!');
 
       localStorage.setItem('wn_session', JSON.stringify({ name: user.name, username: user.username, role: user.role }));
+      sessionStorage.setItem('wn_active', '1');
       window.location.href = user.role === 'admin' ? 'admin.html' : 'index.html';
     }
 
@@ -213,6 +264,11 @@
 
       if (!name || !username || !password) return showError('registerError', 'Semua field wajib diisi!');
       if (password.length < 6) return showError('registerError', 'Password minimal 6 karakter!');
+      if (role === 'admin') {
+        const brand = document.getElementById('regBrand').value;
+        if (!brand) return showError('registerError', 'Kode brand wajib diisi untuk daftar sebagai Admin!');
+        if (brand !== BRAND_CODE) return showError('registerError', 'Kode brand tidak valid!');
+      }
 
       const users = getUsers();
       if (users.find(u => u.username === username)) return showError('registerError', 'Username sudah dipakai, coba yang lain!');
@@ -220,6 +276,7 @@
       users.push({ name, username, password, role });
       saveUsers(users);
       localStorage.setItem('wn_session', JSON.stringify({ name, username, role }));
+      sessionStorage.setItem('wn_active', '1');
       window.location.href = role === 'admin' ? 'admin.html' : 'index.html';
     }
 

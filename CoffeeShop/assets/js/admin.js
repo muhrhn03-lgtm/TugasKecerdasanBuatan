@@ -1,4 +1,8 @@
 // ===== AUTH GUARD (admin only) =====
+if (!sessionStorage.getItem('wn_active')) {
+  localStorage.removeItem('wn_session');
+  window.location.href = 'login.html';
+}
 const session = JSON.parse(localStorage.getItem('wn_session') || 'null');
 if (!session || session.role !== 'admin') {
   window.location.href = session ? 'index.html' : 'login.html';
@@ -75,7 +79,18 @@ function saveMenuData(data) {
   localStorage.setItem('wn_menu', JSON.stringify(data));
 }
 function getUsers() {
-  return JSON.parse(localStorage.getItem('wn_users') || '[]');
+  let users = JSON.parse(localStorage.getItem('wn_users') || '[]');
+  const seen = new Set();
+  const deduped = users.filter(u => {
+    if (seen.has(u.username)) return false;
+    seen.add(u.username);
+    return true;
+  });
+  // Simpan kembali jika ada duplikat yang dibersihkan
+  if (deduped.length !== users.length) {
+    localStorage.setItem('wn_users', JSON.stringify(deduped));
+  }
+  return deduped;
 }
 function formatRp(n) {
   return 'Rp ' + Number(n).toLocaleString('id-ID');
@@ -169,15 +184,59 @@ function renderUsersTable() {
   document.getElementById('userCountBadge').textContent = users.length;
   const tbody = document.getElementById('usersTableBody');
   if (!users.length) {
-    tbody.innerHTML = `<tr><td colspan="3"><div class="empty-state"><i class="fas fa-users"></i>Belum ada pengguna</div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><i class="fas fa-users"></i>Belum ada pengguna</div></td></tr>`;
     return;
   }
-  tbody.innerHTML = users.map(u => `
+  tbody.innerHTML = users.map(u => {
+    const isAdmin = u.role === 'admin';
+    const isBlocked = u.blocked === true;
+    const isSelf = u.username === session.username;
+    return `
     <tr>
       <td><div class="table-name">${u.name}</div></td>
       <td>${u.username}</td>
-      <td><span class="user-role-badge ${u.role}">${u.role === 'admin' ? '<i class="fas fa-user-shield"></i> Admin' : '<i class="fas fa-user"></i> Konsumen'}</span></td>
-    </tr>`).join('');
+      <td><span class="user-role-badge ${u.role}">${isAdmin ? '<i class="fas fa-user-shield"></i> Admin' : '<i class="fas fa-user"></i> Konsumen'}</span></td>
+      <td>
+        ${isBlocked
+          ? '<span class="status-badge diblokir"><i class="fas fa-ban"></i> Diblokir</span>'
+          : '<span class="status-badge aktif"><i class="fas fa-check-circle"></i> Aktif</span>'}
+      </td>
+      <td>
+        <div class="action-btns">
+          ${!isAdmin && !isSelf ? (
+            isBlocked
+              ? `<button class="btn-edit btn-unblock" onclick="unblockUser('${u.username}')" title="Buka Blokir"><i class="fas fa-lock-open"></i></button>`
+              : `<button class="btn-edit btn-block" onclick="blockUser('${u.username}')" title="Blokir"><i class="fas fa-ban"></i></button>`
+          ) : ''}
+          ${!isSelf ? `<button class="btn-delete" onclick="deleteUser('${u.username}', '${u.name.replace(/'/g, "\\'")}')"><i class="fas fa-trash"></i></button>` : ''}
+          ${isSelf ? '<span style="font-size:0.75rem;color:var(--text-light)">Akun Anda</span>' : ''}
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function blockUser(username) {
+  const users = getUsers().map(u => u.username === username ? { ...u, blocked: true } : u);
+  localStorage.setItem('wn_users', JSON.stringify(users));
+  showToast('🚫 Akun berhasil diblokir!');
+  renderUsersTable();
+}
+
+function unblockUser(username) {
+  const users = getUsers().map(u => u.username === username ? { ...u, blocked: false } : u);
+  localStorage.setItem('wn_users', JSON.stringify(users));
+  showToast('✅ Blokir akun berhasil dibuka!');
+  renderUsersTable();
+}
+
+function deleteUser(username, name) {
+  if (!confirm(`Hapus akun "${name}"? Aksi ini tidak bisa dibatalkan!`)) return;
+  const users = getUsers().filter(u => u.username !== username);
+  localStorage.setItem('wn_users', JSON.stringify(users));
+  showToast('🗑️ Akun berhasil dihapus!');
+  renderUsersTable();
+  renderDashboard();
 }
 
 // ===== MODAL MENU =====

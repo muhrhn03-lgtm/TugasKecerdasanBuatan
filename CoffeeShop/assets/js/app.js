@@ -1,4 +1,8 @@
 // ===== AUTH GUARD =====
+if (!sessionStorage.getItem('wn_active')) {
+  localStorage.removeItem('wn_session');
+  window.location.href = 'login.html';
+}
 const session = JSON.parse(localStorage.getItem('wn_session') || 'null');
 if (!session) { window.location.href = 'login.html'; }
 

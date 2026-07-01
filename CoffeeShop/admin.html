@@ -197,6 +197,16 @@
     }
     .user-role-badge.admin { background: #fce4ec; color: #c62828; }
     .user-role-badge.konsumen { background: #e8f5e9; color: #2e7d32; }
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+    }
+    .status-badge.aktif { background: #e8f5e9; color: #2e7d32; }
+    .status-badge.diblokir { background: #fdecea; color: #c62828; }
+    .btn-block { background: #fff3e0; color: #e65100; }
+    .btn-block:hover { background: #e65100; color: white; }
+    .btn-unblock { background: #e8f5e9; color: #2e7d32; }
+    .btn-unblock:hover { background: #2e7d32; color: white; }
 
     /* EMPTY STATE */
     .empty-state { text-align: center; padding: 60px 20px; color: var(--text-light); }
@@ -388,6 +398,8 @@
                   <th>Nama</th>
                   <th>Username</th>
                   <th>Role</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
                 </tr>
               </thead>
               <tbody id="usersTableBody"></tbody>
