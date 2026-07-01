@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login – Warung Ne'Cil</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    body { min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, rgba(44,24,16,0.92) 0%, rgba(139,69,19,0.75) 100%),
+      url('https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=1600') center/cover no-repeat; }
+
+    .auth-box {
+      background: white; border-radius: 20px; padding: 40px 36px;
+      width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .auth-logo { text-align: center; margin-bottom: 28px; }
+    .auth-logo img { height: 64px; }
+    .auth-logo h2 { font-family: 'Playfair Display', serif; color: var(--primary); margin-top: 10px; font-size: 1.5rem; }
+
+    .auth-tabs { display: flex; gap: 0; margin-bottom: 28px; border-radius: 10px; overflow: hidden; border: 2px solid var(--primary); }
+    .auth-tab {
+      flex: 1; padding: 10px; text-align: center; cursor: pointer;
+      font-weight: 600; font-size: 0.9rem; font-family: 'Poppins', sans-serif;
+      background: white; color: var(--primary); border: none; transition: all 0.3s;
+    }
+    .auth-tab.active { background: var(--primary); color: white; }
+
+    .auth-form { display: none; }
+    .auth-form.active { display: block; }
+
+    .auth-form h3 { font-size: 1.1rem; color: var(--dark); margin-bottom: 20px; }
+
+    .role-select { display: flex; gap: 10px; margin-bottom: 20px; }
+    .role-opt { flex: 1; }
+    .role-opt input { display: none; }
+    .role-card {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      padding: 14px 10px; border: 2px solid #eee; border-radius: 10px;
+      cursor: pointer; transition: all 0.3s; background: var(--bg);
+      font-size: 0.85rem; font-weight: 600; color: var(--text);
+    }
+    .role-card i { font-size: 1.4rem; color: var(--primary-light); }
+    .role-opt input:checked + .role-card { border-color: var(--primary); background: #fff5ec; color: var(--primary); }
+    .role-opt input:checked + .role-card i { color: var(--primary); }
+
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .field input {
+      width: 100%; padding: 12px 16px; border: 2px solid #eee; border-radius: 10px;
+      font-family: 'Poppins', sans-serif; font-size: 0.9rem; color: var(--dark);
+      background: var(--bg); transition: all 0.3s;
+    }
+    .field input:focus { outline: none; border-color: var(--primary); background: white; }
+
+    .auth-btn {
+      width: 100%; padding: 14px; background: var(--primary); color: white;
+      border: none; border-radius: 50px; font-size: 1rem; font-weight: 600;
+      font-family: 'Poppins', sans-serif; cursor: pointer; transition: all 0.3s; margin-top: 4px;
+    }
+    .auth-btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
+
+    .auth-error { background: #fdecea; color: #c62828; padding: 10px 14px; border-radius: 8px;
+      font-size: 0.85rem; margin-bottom: 14px; display: none; }
+    .auth-error.show { display: block; }
+
+    .field-pw { position: relative; }
+    .field-pw input { padding-right: 42px; }
+    .pw-toggle {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: var(--text-light);
+      font-size: 0.95rem; padding: 0; transition: color 0.2s;
+    }
+    .pw-toggle:hover { color: var(--primary); }
+  </style>
+</head>
+<body>
+  <div class="auth-box">
+    <div class="auth-logo">
+      <img src="assets/img/Logo.png" alt="Logo">
+      <h2>Warung Ne'Cil</h2>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchTab('login')">Login</button>
+      <button class="auth-tab" onclick="switchTab('register')">Daftar</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div class="auth-form active" id="loginForm">
+      <h3>Masuk ke Akun Anda</h3>
+      <div class="auth-error" id="loginError"></div>
+      <div class="role-select">
+        <label class="role-opt">
+          <input type="radio" name="loginRole" value="konsumen" checked>
+          <span class="role-card"><i class="fas fa-user"></i>Konsumen</span>
+        </label>
+        <label class="role-opt">
+          <input type="radio" name="loginRole" value="admin">
+          <span class="role-card"><i class="fas fa-user-shield"></i>Admin</span>
+        </label>
+      </div>
+      <div class="field">
+        <label>Username</label>
+        <input type="text" id="loginUsername" placeholder="Masukkan username" />
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <div class="field-pw">
+          <input type="password" id="loginPassword" placeholder="Masukkan password" />
+          <button type="button" class="pw-toggle" onclick="togglePw('loginPassword', this)"><i class="fas fa-eye"></i></button>
+        </div>
+      </div>
+      <button class="auth-btn" onclick="doLogin()">Masuk <i class="fas fa-arrow-right"></i></button>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div class="auth-form" id="registerForm">
+      <h3>Buat Akun Baru</h3>
+      <div class="auth-error" id="registerError"></div>
+      <div class="role-select">
+        <label class="role-opt">
+          <input type="radio" name="registerRole" value="konsumen" checked>
+          <span class="role-card"><i class="fas fa-user"></i>Konsumen</span>
+        </label>
+        <label class="role-opt">
+          <input type="radio" name="registerRole" value="admin">
+          <span class="role-card"><i class="fas fa-user-shield"></i>Admin</span>
+        </label>
+      </div>
+      <div class="field">
+        <label>Nama Lengkap</label>
+        <input type="text" id="regName" placeholder="Nama kalian" />
+      </div>
+      <div class="field">
+        <label>Username</label>
+        <input type="text" id="regUsername" placeholder="Buat username" />
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <div class="field-pw">
+          <input type="password" id="regPassword" placeholder="Buat password (min. 6 karakter)" />
+          <button type="button" class="pw-toggle" onclick="togglePw('regPassword', this)"><i class="fas fa-eye"></i></button>
+        </div>
+      </div>
+      <button class="auth-btn" onclick="doRegister()">Daftar Sekarang <i class="fas fa-user-plus"></i></button>
+    </div>
+  </div>
+
+  <script>
+    function togglePw(id, btn) {
+      const input = document.getElementById(id);
+      const isHidden = input.type === 'password';
+      input.type = isHidden ? 'text' : 'password';
+      btn.querySelector('i').className = isHidden ? 'fas fa-eye-slash' : 'fas fa-eye';
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.auth-tab').forEach((t, i) => t.classList.toggle('active', (i === 0) === (tab === 'login')));
+      document.getElementById('loginForm').classList.toggle('active', tab === 'login');
+      document.getElementById('registerForm').classList.toggle('active', tab === 'register');
+    }
+
+    function getUsers() {
+      return JSON.parse(localStorage.getItem('wn_users') || '[]');
+    }
+    function saveUsers(users) {
+      localStorage.setItem('wn_users', JSON.stringify(users));
+    }
+
+    // Seed admin default jika belum ada
+    (function seedAdmin() {
+      const users = getUsers();
+      if (!users.find(u => u.username === 'admin')) {
+        users.push({ name: 'Admin', username: 'admin', password: 'admin123', role: 'admin' });
+        saveUsers(users);
+      }
+    })();
+
+    function showError(id, msg) {
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      el.classList.add('show');
+    }
+    function hideError(id) {
+      document.getElementById(id).classList.remove('show');
+    }
+
+    function doLogin() {
+      hideError('loginError');
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const role = document.querySelector('input[name="loginRole"]:checked').value;
+
+      if (!username || !password) return showError('loginError', 'Username dan password wajib diisi!');
+
+      const users = getUsers();
+      const user = users.find(u => u.username === username && u.password === password && u.role === role);
+      if (!user) return showError('loginError', 'Username, password, atau role tidak sesuai!');
+
+      localStorage.setItem('wn_session', JSON.stringify({ name: user.name, username: user.username, role: user.role }));
+      window.location.href = user.role === 'admin' ? 'admin.html' : 'index.html';
+    }
+
+    function doRegister() {
+      hideError('registerError');
+      const name = document.getElementById('regName').value.trim();
+      const username = document.getElementById('regUsername').value.trim();
+      const password = document.getElementById('regPassword').value;
+      const role = document.querySelector('input[name="registerRole"]:checked').value;
+
+      if (!name || !username || !password) return showError('registerError', 'Semua field wajib diisi!');
+      if (password.length < 6) return showError('registerError', 'Password minimal 6 karakter!');
+
+      const users = getUsers();
+      if (users.find(u => u.username === username)) return showError('registerError', 'Username sudah dipakai, coba yang lain!');
+
+      users.push({ name, username, password, role });
+      saveUsers(users);
+      localStorage.setItem('wn_session', JSON.stringify({ name, username, role }));
+      window.location.href = role === 'admin' ? 'admin.html' : 'index.html';
+    }
+
+    // Enter key support
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        if (document.getElementById('loginForm').classList.contains('active')) doLogin();
+        else doRegister();
+      }
+    });
+  </script>
+</body>
+</html>

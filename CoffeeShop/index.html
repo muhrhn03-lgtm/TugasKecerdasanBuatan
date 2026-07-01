@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coffee Borneo – Coffee Shop</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-brand">
+      <img src="assets/img/Logo2.png" alt="logo Coffee Borneo" style="height:80px; width:auto;">
+    </div>
+
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#home">Beranda</a></li>
+      <li><a href="#about">Tentang</a></li>
+      <li><a href="#menu">Menu</a></li>
+      <li><a href="#gallery">Galeri</a></li>
+      <li><a href="#contact">Kontak</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="nav-user" id="navUser"></div>
+      <button class="cart-btn" onclick="toggleCart()" id="cartBtn">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
+      <div class="hamburger" onclick="toggleNav()">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="hero-overlay"></div>
+
+    <!-- PRISAI DAYAK KALTIM -->
+    <div class="dayak-shield">
+      <svg viewBox="0 0 120 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- Badan prisai -->
+        <path d="M60 4 L108 30 L108 120 L60 196 L12 120 L12 30 Z" fill="none" stroke="rgba(212,168,83,0.85)" stroke-width="2.5"/>
+        <!-- Garis tengah vertikal -->
+        <line x1="60" y1="10" x2="60" y2="188" stroke="rgba(212,168,83,0.6)" stroke-width="1"/>
+        <!-- Garis tengah horizontal -->
+        <line x1="18" y1="75" x2="102" y2="75" stroke="rgba(212,168,83,0.6)" stroke-width="1"/>
+        <line x1="18" y1="110" x2="102" y2="110" stroke="rgba(212,168,83,0.6)" stroke-width="1"/>
+        <!-- Motif atas - wajah topeng -->
+        <circle cx="60" cy="48" r="18" fill="none" stroke="rgba(212,168,83,0.8)" stroke-width="1.5"/>
+        <circle cx="60" cy="48" r="8" fill="rgba(212,168,83,0.25)" stroke="rgba(212,168,83,0.7)" stroke-width="1"/>
+        <!-- Mata kiri -->
+        <ellipse cx="53" cy="45" rx="3" ry="4" fill="rgba(212,168,83,0.5)"/>
+        <!-- Mata kanan -->
+        <ellipse cx="67" cy="45" rx="3" ry="4" fill="rgba(212,168,83,0.5)"/>
+        <!-- Mulut -->
+        <path d="M53 54 Q60 59 67 54" fill="none" stroke="rgba(212,168,83,0.7)" stroke-width="1.2"/>
+        <!-- Tanduk kiri -->
+        <path d="M44 32 Q36 18 42 10" fill="none" stroke="rgba(212,168,83,0.7)" stroke-width="1.5"/>
+        <path d="M42 10 Q46 16 44 22" fill="none" stroke="rgba(212,168,83,0.6)" stroke-width="1"/>
+        <!-- Tanduk kanan -->
+        <path d="M76 32 Q84 18 78 10" fill="none" stroke="rgba(212,168,83,0.7)" stroke-width="1.5"/>
+        <path d="M78 10 Q74 16 76 22" fill="none" stroke="rgba(212,168,83,0.6)" stroke-width="1"/>
+        <!-- Motif tengah - ornamen ulap doyo -->
+        <path d="M30 88 L45 75 L60 82 L75 75 L90 88 L75 101 L60 94 L45 101 Z" fill="none" stroke="rgba(212,168,83,0.75)" stroke-width="1.2"/>
+        <circle cx="60" cy="88" r="5" fill="rgba(212,168,83,0.3)" stroke="rgba(212,168,83,0.7)" stroke-width="1"/>
+        <!-- Motif bawah - ekor -->
+        <path d="M40 120 Q60 115 80 120" fill="none" stroke="rgba(212,168,83,0.6)" stroke-width="1.2"/>
+        <path d="M35 135 Q60 128 85 135" fill="none" stroke="rgba(212,168,83,0.5)" stroke-width="1"/>
+        <path d="M30 150 Q60 140 90 150" fill="none" stroke="rgba(212,168,83,0.4)" stroke-width="1"/>
+        <!-- Ujung bawah lancip -->
+        <path d="M48 170 L60 196 L72 170" fill="none" stroke="rgba(212,168,83,0.6)" stroke-width="1.2"/>
+        <!-- Hiasan sisi kiri -->
+        <path d="M12 55 Q6 65 12 75" fill="none" stroke="rgba(212,168,83,0.5)" stroke-width="1"/>
+        <path d="M12 85 Q6 95 12 105" fill="none" stroke="rgba(212,168,83,0.5)" stroke-width="1"/>
+        <!-- Hiasan sisi kanan -->
+        <path d="M108 55 Q114 65 108 75" fill="none" stroke="rgba(212,168,83,0.5)" stroke-width="1"/>
+        <path d="M108 85 Q114 95 108 105" fill="none" stroke="rgba(212,168,83,0.5)" stroke-width="1"/>
+      </svg>
+    </div>
+
+    <div class="hero-content">
+      <p class="hero-sub">Selamat Datang di</p>
+      <h1 class="hero-title">Coffee Borneo</h1>
+      <p class="hero-desc">Cita rasa autentik khas Kalimantan dalam setiap tegukan dan gigitan.<br>Tempat hangat untuk bersantai bersama orang terkasih, terkasih loh ya bukan just friend.</p>
+      <div class="hero-btns">
+        <a href="#menu" class="btn btn-primary">Lihat Menu</a>
+        <a href="#contact" class="btn btn-outline">Hubungi Kami</a>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <span>Scroll</span>
+      <i class="fas fa-chevron-down"></i>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-img-wrap">
+          <div class="about-img-box">
+            <div class="about-img-main" style="background:url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600') center/cover no-repeat"></div>
+            <div class="about-badge">
+              <span class="badge-num">5+</span>
+              <span class="badge-txt">Tahun Melayani</span>
+            </div>
+          </div>
+        </div>
+        <div class="about-text">
+          <p class="section-label">Tentang Kami</p>
+          <h2>Kehangatan Kopi<br>dalam Setiap Sajian</h2>
+          <p>Tahu lah ikam?, Coffee Borneo hadir sejak 2026 dengan semangat menyajikan minuman dan camilan berkualitas dengan suasana yang nyaman dan harga bersahabat. Nama "Coffee Borneo" terinspirasi dari nama pulau Kalimantan tempat Coffe Borneo pertama berdiri.</p>
+          <div class="about-stats">
+            <div class="stat"><span>1000+</span><p>Pelanggan Setia</p></div>
+            <div class="stat"><span>30+</span><p>Varian Menu</p></div>
+            <div class="stat"><span>5★</span><p>Rating Google</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MENU -->
+  <section class="menu-section" id="menu">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-label">Pilihan Kami</p>
+        <h2>Menu Favorit</h2>
+        <p class="section-desc">Pilihan minuman segar dan camilan lezat yang siap memanjakan selera Anda yaa, bukan memanjakan mantan...hmm</p>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="menu-tabs">
+        <button class="tab-btn active" onclick="filterMenu('all', this)">Semua</button>
+        <button class="tab-btn" onclick="filterMenu('minuman', this)">☕ Minuman</button>
+        <button class="tab-btn" onclick="filterMenu('makanan', this)">🍟 Makanan Ringan</button>
+      </div>
+
+      <!-- Menu Grid -->
+      <div class="menu-grid" id="menuGrid"></div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section class="gallery" id="gallery">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-label">Galeri</p>
+        <h2>Suasana Coffee Borneo</h2>
+      </div>
+      <div class="gallery-grid">
+        <div class="gallery-item large" style="background:url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800') center/cover no-repeat"></div>
+        <div class="gallery-item" style="background:url('https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400') center/cover no-repeat"></div>
+        <div class="gallery-item" style="background:url('https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=400') center/cover no-repeat"></div>
+        <div class="gallery-item" style="background:url('https://images.unsplash.com/photo-1464979681340-bdd28a61699e?w=400') center/cover no-repeat"></div>
+        <div class="gallery-item" style="background:url('https://images.unsplash.com/photo-1534040385115-33dcb3acba5b?w=400') center/cover no-repeat"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIAL -->
+  <section class="testimonial">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-label">Ulasan</p>
+        <h2>Kata Pelanggan Kami Nihhh</h2>
+      </div>
+      <div class="testi-grid">
+        <div class="testi-card">
+          <div class="stars">★★★★★</div>
+          <p>"Kopi susu Warung Acil the best lah pokoknya! Tiap pagi pasti mampir, harga terjangkau dan tempatnya nyaman banget, tapi jangan utang lah, ulun handak dicatuknya muha ulun tadi wkwk."</p>
+          <div class="testi-author"><strong>Rizky H.</strong> – Pelanggan Setia</div>
+        </div>
+        <div class="testi-card">
+          <div class="stars">★★★★★</div>
+          <p>"Pisang goreng krispinya juara banget coyy! Cocok banget ni dimakan sambil ngopi sore-sore di sini, tapi jangan sama masa lalu ya wkwk."</p>
+          <div class="testi-author"><strong>Siti N.</strong> – Food Blogger</div>
+        </div>
+        <div class="testi-card">
+          <div class="stars">★★★★★</div>
+          <p>"Nyatai dulu ga sihh hehe. WiFi kencang, minuman enak bet, hendak behirak ada wcnya kok!"</p>
+          <div class="testi-author"><strong>Daffa.</strong> – Pengusaha Muda</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-label">Kontak</p>
+        <h2>Temukan Kami, Kami Kadak Tasambunyi Pang</h2>
+      </div>
+      <div class="contact-grid">
+        <div class="contact-info">
+          <div class="info-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <div>
+              <h4>Alamat</h4>
+              <p>Jl. Kulintang No 09, Kota Samarinda Ulu, Kalimantan Timur</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <i class="fas fa-clock"></i>
+            <div>
+              <h4>Jam Buka</h4>
+              <p>Senin – Minggu: 11.00 – 23.00 WITA</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <i class="fas fa-phone"></i>
+            <div>
+              <h4>Telepon / WhatsApp</h4>
+              <p>+62 812-5726-5886</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <i class="fas fa-envelope"></i>
+            <div>
+              <h4>Email</h4>
+              <p>CoffeeBorneo@gmail.com</p>
+            </div>
+          </div>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-facebook"></i></a>
+            <a href="#"><i class="fab fa-tiktok"></i></a>
+            <a href="#"><i class="fab fa-whatsapp"></i></a>
+          </div>
+        </div>
+        <form class="contact-form" onsubmit="submitForm(event)">
+          <h3>Kirim Pesan</h3>
+          <div class="form-row">
+            <input type="text" placeholder="Nama kalian, Bukan Nama Bahl.." required />
+            <input type="email" placeholder="Email" required />
+          </div>
+          <input type="text" placeholder="Subjek" required />
+          <textarea rows="5" placeholder="Pesan Anda..." required></textarea>
+          <button type="submit" class="btn btn-primary">Kirim Pesan <i class="fas fa-paper-plane"></i></button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="brand-logo"><img src="assets/img/Logo2.png" alt="Logo" style="height:36px; width:auto;"></div>
+        <div class="footer-links">
+          <h4>Menu Utama</h4>
+          <ul>
+            <li><a href="#home">Beranda</a></li>
+            <li><a href="#about">Tentang</a></li>
+            <li><a href="#menu">Menu</a></li>
+            <li><a href="#contact">Kontak</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Layanan</h4>
+          <ul>
+            <li><a href="#">Dine In</a></li>
+            <li><a href="#">Take Away</a></li>
+            <li><a href="#">Delivery</a></li>
+            <li><a href="#">Reservasi Tempat</a></li>
+          </ul>
+        </div>
+        <div class="footer-newsletter">
+          <h4>Newsletter</h4>
+          <p>Dapatkan promo terbaru langsung di email Anda yaa</p>
+          <div class="newsletter-form">
+            <input type="email" placeholder="Email Anda" />
+            <button><i class="fas fa-arrow-right"></i></button>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Warung Acil. All rights reserved. Made with ❤️ in Samarinda.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- CART SIDEBAR -->
+  <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+  <div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-header">
+      <h3><i class="fas fa-shopping-cart"></i> Keranjang</h3>
+      <button onclick="toggleCart()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="cart-items" id="cartItems">
+      <div class="cart-empty"><i class="fas fa-shopping-bag"></i><p>Keranjang masih kosong, wajib isi pokoknya😤, hehee candaa🤣</p></div>
+    </div>
+    <div class="cart-footer" id="cartFooter" style="display:none">
+      <div class="cart-total">
+        <span>Total:</span>
+        <strong id="cartTotal">Rp 0</strong>
+      </div>
+      <div class="cart-action-btns">
+        <button class="btn btn-outline-dark" onclick="checkout()">WhatsApp <i class="fab fa-whatsapp"></i></button>
+        <button class="btn btn-primary" onclick="openServiceModal()">Bayar <i class="fas fa-credit-card"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PILIHAN LAYANAN -->
+  <div class="service-overlay" id="serviceOverlay"></div>
+  <div class="service-modal" id="serviceModal">
+    <div class="service-header">
+      <h3><i class="fas fa-concierge-bell"></i> Pilih Jenis Layanan</h3>
+      <button onclick="closeServiceModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="service-body">
+      <p class="service-subtitle">Mau makan di sini atau diantar ke rumah?</p>
+      <div class="service-options">
+        <button class="service-opt" onclick="pilihLayanan('ditempat')">
+          <div class="service-opt-icon"><i class="fas fa-store"></i></div>
+          <div class="service-opt-info">
+            <strong>Makan di Tempat</strong>
+            <span>Tanpa biaya ongkir, langsung nikmati di sini 😋</span>
+          </div>
+          <i class="fas fa-chevron-right service-arrow"></i>
+        </button>
+        <button class="service-opt" onclick="pilihLayanan('diantar')">
+          <div class="service-opt-icon delivery"><i class="fas fa-motorcycle"></i></div>
+          <div class="service-opt-info">
+            <strong>Pesan Diantar</strong>
+            <span>Diantar ke rumah, ongkir sesuai jarak 🛵</span>
+          </div>
+          <i class="fas fa-chevron-right service-arrow"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DELIVERY (MAP + ONGKIR) -->
+  <div class="delivery-overlay" id="deliveryOverlay"></div>
+  <div class="delivery-modal" id="deliveryModal">
+    <div class="delivery-header">
+      <button class="back-btn" onclick="backToService()"><i class="fas fa-arrow-left"></i></button>
+      <h3><i class="fas fa-map-marker-alt"></i> Lokasi Pengantaran</h3>
+      <button onclick="closeDeliveryModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="delivery-body">
+      <div class="map-wrap">
+        <div id="deliveryMap"></div>
+        <div class="map-pin-center"><i class="fas fa-map-marker-alt"></i></div>
+      </div>
+      <div class="delivery-info-form">
+        <div class="distance-box" id="distanceBox">
+          <div class="dist-item">
+            <i class="fas fa-route"></i>
+            <div>
+              <span>Jarak</span>
+              <strong id="distanceText">Geser pin ke lokasi Anda</strong>
+            </div>
+          </div>
+          <div class="dist-item">
+            <i class="fas fa-wallet"></i>
+            <div>
+              <span>Ongkir</span>
+              <strong id="ongkirText">–</strong>
+            </div>
+          </div>
+        </div>
+        <div class="form-field">
+          <label><i class="fas fa-map-signs"></i> Alamat Lengkap</label>
+          <input type="text" id="alamatInput" placeholder="Contoh: Jl. Ahmad Yani No. 12, RT 03..." />
+        </div>
+        <div class="form-field">
+          <label><i class="fas fa-phone"></i> Nomor Telepon <span class="required">*wajib</span></label>
+          <input type="tel" id="noTelpInput" placeholder="Contoh: 08xxxxxxxxxx" maxlength="15" />
+        </div>
+        <div class="form-field">
+          <label><i class="fas fa-sticky-note"></i> Catatan (opsional)</label>
+          <input type="text" id="catatanInput" placeholder="Contoh: Pintu depan warna biru..." />
+        </div>
+      </div>
+    </div>
+    <div class="delivery-footer">
+      <button class="btn btn-primary" onclick="konfirmasiDelivery()">Lanjut Bayar <i class="fas fa-arrow-right"></i></button>
+    </div>
+  </div>
+
+  <!-- MODAL STATUS PESANAN -->
+  <div class="status-overlay" id="statusOverlay"></div>
+  <div class="status-modal" id="statusModal">
+    <div class="status-header">
+      <h3><i class="fas fa-receipt"></i> Status Pesanan</h3>
+    </div>
+    <div class="status-body">
+      <div class="status-icon-wrap" id="statusIconWrap">
+        <i class="fas fa-clock-rotate-left" id="statusIcon"></i>
+      </div>
+      <p class="status-message" id="statusMessage">Memproses pesanan...</p>
+      <div class="status-items" id="statusItems"></div>
+      <div class="status-detail" id="statusDetail"></div>
+    </div>
+    <div class="status-footer" id="statusFooter" style="display:none">
+      <button class="btn btn-primary" onclick="closeStatusModal()">Kembali ke Menu <i class="fas fa-home"></i></button>
+    </div>
+  </div>
+
+  <!-- PAYMENT MODAL -->
+  <div class="payment-overlay" id="paymentOverlay" onclick="closePayment()"></div>
+  <div class="payment-modal" id="paymentModal">
+    <div class="payment-header">
+      <h3><i class="fas fa-credit-card"></i> Pilih Metode Pembayaran</h3>
+      <button onclick="closePayment()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="payment-body">
+      <p class="payment-label">Transfer Bank</p>
+      <div class="payment-options">
+        <label class="payment-opt">
+          <input type="radio" name="payment" value="Mandiri" onchange="showPaymentInfo(this)">
+          <span class="payment-card"><img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2008.svg" alt="Mandiri"><span>Bank Mandiri</span></span>
+        </label>
+        <label class="payment-opt">
+          <input type="radio" name="payment" value="BSI" onchange="showPaymentInfo(this)">
+          <span class="payment-card"><img src="https://upload.wikimedia.org/wikipedia/commons/4/4b/BSI-Logo.png" alt="BSI"><span>Bank BSI</span></span>
+        </label>
+        <label class="payment-opt">
+          <input type="radio" name="payment" value="BNI" onchange="showPaymentInfo(this)">
+          <span class="payment-card"><img src="https://upload.wikimedia.org/wikipedia/id/5/55/BNI_logo.svg" alt="BNI"><span>Bank BNI</span></span>
+        </label>
+        <label class="payment-opt">
+          <input type="radio" name="payment" value="BCA" onchange="showPaymentInfo(this)">
+          <span class="payment-card"><img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg" alt="BCA"><span>Bank BCA</span></span>
+        </label>
+      </div>
+      <p class="payment-label">Dompet Digital</p>
+      <div class="payment-options">
+        <label class="payment-opt">
+          <input type="radio" name="payment" value="DANA" onchange="showPaymentInfo(this)">
+          <span class="payment-card"><img src="https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_dana_blue.svg" alt="DANA"><span>DANA</span></span>
+        </label>
+      </div>
+      <div class="payment-info-box" id="paymentInfoBox" style="display:none"></div>
+    </div>
+    <div class="payment-footer" id="paymentFooter">
+      <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="confirmPayment()">Konfirmasi <i class="fas fa-check"></i></button>
+    </div>
+    <div class="payment-upload-section" id="paymentUploadSection" style="display:none">
+      <p class="payment-label">Upload Bukti Pembayaran</p>
+      <label class="upload-area" id="uploadArea">
+        <input type="file" id="buktiFile" accept="image/*" onchange="handleBuktiUpload(event)">
+        <div class="upload-placeholder" id="uploadPlaceholder">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <span>Klik atau seret foto bukti transfer di sini</span>
+          <small>Format: JPG, PNG, JPEG</small>
+        </div>
+        <img id="buktiPreview" style="display:none;width:100%;border-radius:8px;max-height:200px;object-fit:cover;">
+      </label>
+      <div class="validasi-status" id="validasiStatus" style="display:none"></div>
+      <button class="btn btn-primary" id="btnSelesai" style="width:100%;justify-content:center;margin-top:12px" onclick="selesaikanPembayaran()" disabled>Selesaikan Pembayaran <i class="fas fa-check-circle"></i></button>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ACCOUNT MODAL -->
+  <div class="acct-overlay" id="acctOverlay" onclick="closeAcctModal()"></div>
+  <div class="acct-modal" id="acctModal">
+    <div class="acct-header">
+      <h3><i class="fas fa-user-cog"></i> Pengaturan Akun</h3>
+      <button class="acct-close" onclick="closeAcctModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="acct-body">
+      <div class="acct-avatar"><i class="fas fa-user"></i></div>
+      <div class="acct-name" id="acctName"></div>
+      <div class="acct-role" id="acctRole"></div>
+      <div class="acct-info-row"><i class="fas fa-user"></i> <span id="acctUsername"></span></div>
+      <div class="acct-info-row"><i class="fas fa-shield-alt"></i> <span id="acctRoleInfo"></span></div>
+    </div>
+    <div class="acct-footer">
+      <button class="btn-delete-acct" onclick="deleteAccount()">
+        <i class="fas fa-trash-alt"></i> Hapus Akun Saya
+      </button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
